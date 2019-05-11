@@ -1,0 +1,219 @@
+/**
+@file: project0.cpp
+@author Youngmin Chung
+@date Feb. 16, 2018
+@version 0.0.1
+@note
+
+@brief: This project converts the user's input to the following data units. ex. unit(byte value)
+Byte(1), kB(1000), MB(1000^2), GB(1000^3), TB(1000^4), PB(1000^5), EB(1000^6),
+KiB(1024), MiB(1024^2), GiB(1024^3), TiB(1024^4), PiB(1024^5), EiB(1024^6),
+char(1), unsigned char(1), short(2), unsigned short(2), int(4), unsigned int(4), long(4),
+unsigned long(4), long long(8), unsigned long long(8), float(4), and double (8)
+
+** pseudo code **
+1. User's input is consist of numeric value and unit data type
+2. The input value should be converted to 'byte' value at first.
+3. And then, the table shows from KB to EB and from KiB to EiB with three decimal points
+by using the covnerted byte value.
+*/
+
+
+#include <iostream> // for cin, cout
+#include <string> // for string
+#include <iomanip> // for setprecision
+#include <cmath> // for pow
+#include <regex> // for using regex_match
+#include <locale> // for comma between numer
+#include <climits>
+#include <sstream>
+
+using namespace std;
+using big_uint = uint64_t;
+
+int main()
+{	// declare and initialize variables
+	long double inputNum = 0; // input value
+	long double outputNum = 0; //output value
+
+							   // converted byte value is divide to each data unit, 
+							   // so I will use two constant numbers for magic number 
+	const big_uint KB = 1000;
+	const big_uint KiB = 1024;
+	string input;
+	string unit;
+
+	// input start
+	cout << "Value to convert = ";
+	cin >> input;
+	cin.ignore(); // flush the cin buffer
+	getline(cin, unit); // using getline over two words of data type can store
+	istringstream iss(unit);
+	vector<string> unitString;
+	string word;
+	while (iss >> word)
+		unitString.push_back(word);
+	inputNum = atof(input.c_str()); // input value convert to numeric value
+
+
+	/** By using if statement, some error message pop up to the user, if the user
+	* doesn't input proper value.
+	*/
+
+	// 1. Negative value
+	if (inputNum < 0) {
+		printf("Error: the input value must be a non-negative value.\n");
+		exit(EXIT_FAILURE);
+	}
+	// 2. Non-numeric value
+	if (!inputNum) {
+		printf("Error: you did not enter a recognizable number.\n");
+		exit(EXIT_FAILURE);
+	}
+	// 3. No unit type provided.
+	if (unit.empty()) {
+		printf("Error: no unit type provided.\n");
+		exit(EXIT_FAILURE);
+	}
+
+	cout.imbue(locale("")); // locale can show comma between 3 digits
+							// output senetence starts
+	cout << fixed << setprecision(0) << inputNum << " " << unitString.at(0) << " is ";
+
+
+	// using regex, the user can input normal type and the type with 's' and
+	// compare between uppercase and lowercase
+	// if statement is good, output value can calculate input value and degignated value
+	regex byte(("(byte)(.*)"), regex::icase);
+	if (regex_match(unitString.at(0), byte))
+		outputNum = inputNum * 1;
+
+	regex kb(("(kb)(.*)"), regex::icase);
+	if (regex_match(unitString.at(0), kb))
+		outputNum = inputNum * pow(KB, 1);
+
+	regex mb(("(mb)(.*)"), regex::icase);
+	if (regex_match(unitString.at(0), mb))
+		outputNum = inputNum * pow(KB, 2);
+
+	regex gb(("(gb)(.*)"), regex::icase);
+	if (regex_match(unitString.at(0), gb))
+		outputNum = inputNum * pow(KB, 3);
+
+	regex tb(("(tb)(.*)"), regex::icase);
+	if (regex_match(unitString.at(0), tb))
+		outputNum = inputNum * pow(KB, 4);
+
+	regex pb(("(pb)(.*)"), regex::icase);
+	if (regex_match(unitString.at(0), pb))
+		outputNum = inputNum * pow(KB, 5);
+
+	regex eb(("(eb)(.*)"), regex::icase);
+	if (regex_match(unitString.at(0), eb))
+		outputNum = inputNum * pow(KB, 6);
+
+	regex kib(("(kib)(.*)"), regex::icase);
+	if (regex_match(unitString.at(0), kib))
+		outputNum = inputNum * pow(KiB, 1);
+
+	regex mib(("(mib)(.*)"), regex::icase);
+	if (regex_match(unitString.at(0), mib))
+		outputNum = inputNum * pow(KiB, 2);
+
+	regex gib(("(gib)(.*)"), regex::icase);
+	if (regex_match(unitString.at(0), gib))
+		outputNum = inputNum * pow(KiB, 3);
+
+	regex tib(("(tib)(.*)"), regex::icase);
+	if (regex_match(unitString.at(0), tib))
+		outputNum = inputNum * pow(KiB, 4);
+
+	regex pib(("(pib)(.*)"), regex::icase);
+	if (regex_match(unitString.at(0), pib))
+		outputNum = inputNum * pow(KiB, 5);
+
+	regex eib(("(eib)(.*)"), regex::icase);
+	if (regex_match(unitString.at(0), eib))
+		outputNum = inputNum * pow(KiB, 6);
+
+	regex ch(("(char)(.*)"), regex::icase);
+	if (regex_match(unitString.at(0), ch))
+		outputNum = inputNum * 1;
+
+	regex unch(("(unsigned char)(.*)"), regex::icase);
+	if (regex_match(unitString.at(0), unch))
+		outputNum = inputNum * 1;
+
+	regex sh(("(short)(.*)"), regex::icase);
+	if (regex_match(unitString.at(0), sh))
+		outputNum = inputNum * 2;
+
+	regex unsh(("(unsigned short)(.*)"), regex::icase);
+	if (regex_match(unitString.at(0), unsh))
+		outputNum = inputNum * 2;
+
+	regex integer(("(int)(.*)"), regex::icase);
+	if (regex_match(unitString.at(0), integer))
+		outputNum = inputNum * 4;
+
+	regex unInteger(("(unsigned int)(.*)"), regex::icase);
+	if (regex_match(unitString.at(0), unInteger))
+		outputNum = inputNum * 4;
+
+	regex unitLong(("(long)(.*)"), regex::icase);
+	if (regex_match(unitString.at(0), unitLong))
+		outputNum = inputNum * 4;
+
+	regex unLong(("(unsigned long)(.*)"), regex::icase);
+	if (regex_match(unitString.at(0), unLong))
+		outputNum = inputNum * 4;
+
+	regex longlong(("(long long)(.*)"), regex::icase);
+	if (regex_match(unitString.at(0), longlong))
+		outputNum = inputNum * 8;
+
+	regex unLonglong(("(unsigned long long)(.*)"), regex::icase);
+	if (regex_match(unitString.at(0), unLonglong))
+		outputNum = inputNum * 8;
+
+	regex unitFloat(("(float)(.*)"), regex::icase);
+	if (regex_match(unitString.at(0), unitFloat))
+		outputNum = inputNum * 4;
+
+	regex unitDouble(("(double)(.*)"), regex::icase);
+	if (regex_match(unitString.at(0), unitDouble))
+		outputNum = inputNum * 8;
+
+	// rest of output sentence is ended.
+	cout << outputNum << " bytes" << '\n';
+
+	/** Table shoule be dynamically sized to the width of the largest numer
+	* if user input outputNum.length to setw(), compliler recognize number of digits only.
+	* So, user add a space for comma per three digits
+	*/
+	int length = 0, comma = 0;
+	big_uint i = (big_uint)outputNum;
+	while (i > 0)
+	{
+		i = i / 10;
+		length++;
+	}
+	comma = length / 3;
+	length = length + comma;
+
+	// if length is too small, table seems too narrow. So, I designated table length 8 for trimming the table
+	if (length < 9)
+		length = 8;
+
+	cout << '\n';
+
+	// table part
+	cout << fixed << setw(length + 5) << "Metric" << "    " << setw(length + 4) << "IEC" << '\n';
+	cout << fixed << setw(length + 5) << "======" << "    " << setw(length + 4) << "===" << '\n';
+	cout << fixed << setprecision(3) << setw(length + 5) << outputNum / pow(KB, 1) << " kB   " << setprecision(3) << setw(length + 2) << outputNum / pow(KiB, 1) << " KiB" << '\n';
+	cout << fixed << setprecision(3) << setw(length + 5) << outputNum / pow(KB, 2) << " MB   " << setprecision(3) << setw(length + 2) << outputNum / pow(KiB, 2) << " MiB" << '\n';
+	cout << fixed << setprecision(3) << setw(length + 5) << outputNum / pow(KB, 3) << " GB   " << setprecision(3) << setw(length + 2) << outputNum / pow(KiB, 3) << " GiB" << '\n';
+	cout << fixed << setprecision(3) << setw(length + 5) << outputNum / pow(KB, 4) << " TB   " << setprecision(3) << setw(length + 2) << outputNum / pow(KiB, 4) << " TiB" << '\n';
+	cout << fixed << setprecision(3) << setw(length + 5) << outputNum / pow(KB, 5) << " PB   " << setprecision(3) << setw(length + 2) << outputNum / pow(KiB, 5) << " PiB" << '\n';
+	cout << fixed << setprecision(3) << setw(length + 5) << outputNum / pow(KB, 6) << " EB   " << setprecision(3) << setw(length + 2) << outputNum / pow(KiB, 6) << " EiB" << '\n';
+}
